@@ -260,6 +260,8 @@ class UDPRelay(object):
         server_socket = socket.socket(af, socktype, proto)
         server_socket.bind((self._listen_addr, self._listen_port))
         server_socket.setblocking(False)
+        server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 1024 * 1024)
+        server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 1024 * 1024)
         self._server_socket = server_socket
         self._stat_callback = stat_callback
 
@@ -398,6 +400,9 @@ class UDPRelay(object):
                         continue
 
                 if has_higher_priority:
+                    continue
+					
+                if self._relay_rules[id]['dist_ip'] == '0.0.0.0':
                     continue
 
                 if self._relay_rules[id]['port'] == 0:
